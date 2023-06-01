@@ -3,7 +3,7 @@ INCLUDES=-I/opt/X11/include
 LDFLAGS=-L/opt/X11/lib -lX11 -lm
 
 qs_para: clean
-	gcc $(CFLAGS) $(INCLUDES) -o qsort qs_para.c ./graphics/graphics.c ./linked_list.c $(LDFLAGS) -Xpreprocessor -fopenmp -lomp -L/opt/homebrew/opt/libomp/lib -I/opt/homebrew/opt/libomp/include
+	gcc $(CFLAGS) $(INCLUDES) -o qsort qs_para.c ./graphics/graphics.c  $(LDFLAGS) -Xpreprocessor -fopenmp -lomp -L/opt/homebrew/opt/libomp/lib -I/opt/homebrew/opt/libomp/include
 
 clean:
 	rm -f ./qsort *.o
