@@ -147,19 +147,19 @@ void swap_pos(double* a, double* b) {
 }
 
 
-int partition(int low, int high) {
-    int pi = selectPivot(low, high);
+int partition(int startIndex, int endIndex) {
+    int pi = selectPivot(startIndex, endIndex);
     int piv = elements[pi];
     
-    swap_pos(&elements[pi], &elements[high]);
+    swap_pos(&elements[pi], &elements[endIndex]);
 
-    int i = low - 1;
-    for (int j = low; j < high; j++) {
+    int i = startIndex - 1;
+    for (int j = startIndex; j < endIndex; j++) {
         if (elements[j] < piv) {
             swap_pos(&elements[++i], &elements[j]);
         }
     }
-    swap_pos(&elements[i + 1], &elements[high]);
+    swap_pos(&elements[i + 1], &elements[endIndex]);
     return (i + 1);
 }
 

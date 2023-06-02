@@ -10,4 +10,4 @@ clean:
 
 #FILENAME // COL_TO_READ // ORDER // nTHREADS // isGRAPHIC
 test: qs_para
-	./qsort "cities_over_1000_population.csv" 1 1 4 1
+	./qsort "cities_over_1000_population.csv" 1 1 8 1
