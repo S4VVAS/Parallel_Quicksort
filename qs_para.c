@@ -194,7 +194,7 @@ void sort(){
         ends[0] = step + rem;
         for(int i = 1; i < nThreads; i++){
             starts[i] = (i * step) + rem;
-            ends[i] = ((i+1) * step) + rem;
+            ends[i] = ((i+1) * step) + rem -1;
         }
         
     }
