@@ -10,7 +10,7 @@
 
 const int windowWidth=800;
 
-int nThreads, isGraphic = 1, col, order, size, *element_pos, *pivots, *starts, *ends;
+int nThreads, isGraphic = 1, col, order, size, *pivots, *starts, *ends;
 char *colName, *fileName;
 float gHeightY, smallest, largest;
 double *elements;
@@ -27,7 +27,7 @@ void updateGraphics(){
     if(isGraphic){
         ClearScreen();
         for(int i = 0; i < size; i++){
-            DrawLine(reduceRange(element_pos[i],0,size,0.1, 0.9), gHeightY, 1.0, 1.0, reduceRange(elements[i],smallest,largest,0,650) , 0.5);
+            DrawLine(reduceRange(i,0,size,0.1, 0.9), gHeightY, 1.0, 1.0, reduceRange(elements[i],smallest,largest,0,650) , 0.5);
         }
         Refresh();
         usleep(3000);
@@ -59,10 +59,7 @@ void readData(FILE* file, int division) {
                     // Convert the value to double and store it
                     elements = realloc(elements, sizeof(double) * (size + 1));
                     elements[size] = atof(token);
-                    
-                    element_pos = realloc(element_pos, sizeof(int) * (size + 1));
-                    element_pos[size] = size;
-                    
+                                        
                     //THE LARGEST AND SMALLEST VARIABLES ARE ONLY USED FOR GRAPHICS!!
                     if(elements[size] > largest)
                         largest = elements[size];
@@ -127,7 +124,6 @@ void clean(){
     free(fileName);
 
     free(elements);
-    free(element_pos);
     
     free(pivots);
     free(starts);
@@ -143,83 +139,44 @@ int selectPivot(int startIndex, int endIndex){
     return startIndex + (endIndex-startIndex)/2;
 }
 
-void swap_pos(int a, int b){
-    int tmp = element_pos[a];
-    element_pos[a] = element_pos[b];
-    element_pos[b] = tmp;
 
+void swap_pos(double* a, double* b) {
+    double t = *a;
+    *a = *b;
+    *b = t;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-void globalSort(int startIndex, int endIndex, int threadId) {
-    int locid = threadId % size;
-    double group = threadId / size;
-
-    if (locid == 0) {
-        pivots[(int)group] = selectPivot(startIndex, endIndex);
-    }
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 int partition(int low, int high) {
-    int pivotIndex = selectPivot(low, high);
-    int pivot = elements[element_pos[pivotIndex]];
-    swap_pos(pivotIndex, high);
+    int pi = selectPivot(low, high);
+    int piv = elements[pi];
+    
+    swap_pos(&elements[pi], &elements[high]);
 
     int i = low - 1;
-    for (int j = low; j <= high - 1; j++) {
-        if (elements[element_pos[j]] <= pivot) {
-            i++;
-            swap_pos(i, j);
+    for (int j = low; j < high; j++) {
+        if (elements[j] < piv) {
+            swap_pos(&elements[++i], &elements[j]);
         }
     }
-    swap_pos(i + 1, high);
+    swap_pos(&elements[i + 1], &elements[high]);
     return (i + 1);
 }
 
-
-
-
-
-
-void mergeSort(int startIndex, int endIndex){
+void quickSort(int startIndex, int endIndex) {
     if (startIndex < endIndex) {
         int prt = partition(startIndex, endIndex);
-        mergeSort(startIndex, prt-1);
-        mergeSort(prt+1, endIndex);
+        quickSort(startIndex, prt - 1);
+        quickSort(prt + 1, endIndex);
     }
+    
+    //if(startIndex % 999 == 0)
+   //     updateGraphics();
+
 }
 
 
-void quickSort(){
-
+void sort(){
    int rem = size%nThreads;
     
     if(rem == 0){
@@ -241,17 +198,14 @@ void quickSort(){
         }
         
     }
-    #pragma omp parallel num_threads(nThreads) shared(elements)
+    
+    #pragma omp parallel num_threads(nThreads)
     {
-        {
             int tid = omp_get_thread_num();
             printf("%d + %d\n", starts[tid], ends[tid]);
             //Sort locally in processor
-            mergeSort(starts[tid], ends[tid]);
+            quickSort(starts[tid], ends[tid]);
             //globalSort(starts[tid], ends[tid], tid);
-        }
-        
-
 
         
     }
@@ -281,7 +235,7 @@ int main(int argc, char** argv){
     setup(argv);
 
     
-    quickSort();
+    sort();
     
 
     while(!CheckForQuit()){
@@ -289,11 +243,11 @@ int main(int argc, char** argv){
     }
     
     
-    for(int i = 0; i < 1000; i++){
-        for(int j = 1; j < size; j++){
-            if(element_pos[j] == i)
-                printf("%d = %f\n", element_pos[j], elements[j]);
-        }
+    for(int i = 980; i < 1000; i++){
+       
+                printf("%d = %f\n", i ,elements[i]);
+        
+        
     }
    // printf("size: %d\n",size);
     
