@@ -30,7 +30,7 @@ void updateGraphics(){
             DrawLine(reduceRange(i,0,size,0.1, 0.9), gHeightY, 1.0, 1.0, reduceRange(elements[i],smallest,largest,0,650) , 0.5);
         }
         Refresh();
-        usleep(3000);
+        //usleep();
     }
 }
 
@@ -166,12 +166,14 @@ int partition(int startIndex, int endIndex) {
 void quickSort(int startIndex, int endIndex) {
     if (startIndex < endIndex) {
         int prt = partition(startIndex, endIndex);
+        
         quickSort(startIndex, prt - 1);
+        
         quickSort(prt + 1, endIndex);
     }
     
-    //if(startIndex % 999 == 0)
-   //     updateGraphics();
+    
+   
 
 }
 
@@ -191,23 +193,20 @@ void sort(){
     else{
         int step = (size-rem)/nThreads;
         starts[0] = 0;
-        ends[0] = step + rem;
+        ends[0] = step + rem - 1;
         for(int i = 1; i < nThreads; i++){
             starts[i] = (i * step) + rem;
-            ends[i] = ((i+1) * step) + rem -1;
+            ends[i] = ((i+1) * step) + rem - 1;
         }
-        
     }
     
     #pragma omp parallel num_threads(nThreads)
     {
-            int tid = omp_get_thread_num();
-            printf("%d + %d\n", starts[tid], ends[tid]);
-            //Sort locally in processor
-            quickSort(starts[tid], ends[tid]);
-            //globalSort(starts[tid], ends[tid], tid);
-
-        
+        int tid = omp_get_thread_num();
+        printf("%d + %d\n", starts[tid], ends[tid]);
+        //Sort locally in processor
+        quickSort(starts[tid], ends[tid]);
+        //globalSort(starts[tid], ends[tid], tid);
     }
 
 
@@ -243,7 +242,7 @@ int main(int argc, char** argv){
     }
     
     
-    for(int i = 980; i < 1000; i++){
+    for(int i = size-10; i < size; i++){
        
                 printf("%d = %f\n", i ,elements[i]);
         
