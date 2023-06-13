@@ -6,8 +6,6 @@
 #include <float.h>
 #include <sys/time.h>
 
-#define MAX_CHARS 2048
-
 const int windowWidth=800;
 
 int nThreads, isGraphic = 1, size, nBuckets, *bucketCounts;;
