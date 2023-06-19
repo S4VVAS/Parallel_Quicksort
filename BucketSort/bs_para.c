@@ -38,7 +38,7 @@ void setup(char **argv) {
    // nThreads = atoi(argv[3]);
     isGraphic = atoi(argv[4]);
     
-    //nBuckets = size;
+    
 
     if (isGraphic) {
         InitializeGraphics(argv[0], windowWidth, windowWidth);
@@ -94,7 +94,7 @@ void bucketSort() {
             minimum = elements[i];
     }
     
-    #pragma omp parallel for num_threads(nThreads) schedule(static)
+    #pragma omp parallel for num_threads(nThreads) schedule(guided)
     for(int b = 0; b < nBuckets; b++){
         for(int i = 0; i < size; i++){
             //Converts index to int, rounds down
@@ -152,255 +152,58 @@ void populateUniform(){
     setSnL();
 }
 
+double run(int t, int b, int dist, char **argv){
+    nBuckets = t;
+    nThreads = b;
+    setup(argv);
+    switch(dist){
+        case 0:
+            populateNormal();
+            break;
+        case 1:
+            populateExponential();
+            break;
+        case 2:
+            populateUniform();
+    }
+    setSnL();
+    updateGraphics();
+    double uTime = omp_get_wtime();
+    bucketSort();
+    uTime = omp_get_wtime() - uTime;
+    updateGraphics();
+    clean();
+    
+    return uTime;
+    
+}
+
+
 int main(int argc, char **argv) {
-    // NORMAL RUN
-    nBuckets = 1;
-    nThreads = 1;
-    setup(argv);
-    populateNormal();
-    setSnL();
-    updateGraphics();
-    double nTime1 = omp_get_wtime();
-    bucketSort();
-    nTime1 = omp_get_wtime() - nTime1;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 2;
-    nThreads = 2;
-    setup(argv);
-    populateNormal();
-    setSnL();
-    updateGraphics();
-    double nTime2 = omp_get_wtime();
-    bucketSort();
-    nTime2 = omp_get_wtime() - nTime2;
-    nTime2 = nTime1 / nTime2;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 4;
-    nThreads = 4;
-    setup(argv);
-    populateNormal();
-    setSnL();
-    updateGraphics();
-    double nTime4 = omp_get_wtime();
-    bucketSort();
-    nTime4 = omp_get_wtime() - nTime4;
-    nTime4 = nTime1 / nTime4;
-    updateGraphics();
-    clean();
 
-    nBuckets = 8;
-    nThreads = 8;
-    setup(argv);
-    populateNormal();
-    setSnL();
-    updateGraphics();
-    double nTime8 = omp_get_wtime();
-    bucketSort();
-    nTime8 = omp_get_wtime() - nTime8;
-    nTime8 = nTime1 / nTime8;
-    updateGraphics();
-    clean();
-
-    nBuckets = 16;
-    nThreads = 16;
-    setup(argv);
-    populateNormal();
-    setSnL();
-    updateGraphics();
-    double nTime16 = omp_get_wtime();
-    bucketSort();
-    nTime16 = omp_get_wtime() - nTime16;
-    nTime16 = nTime1 / nTime16;
-    updateGraphics();
-    clean();
-
-    nBuckets = 32;
-    nThreads = 32;
-    setup(argv);
-    populateNormal();
-    setSnL();
-    updateGraphics();
-    double nTime32 = omp_get_wtime();
-    bucketSort();
-    nTime32 = omp_get_wtime() - nTime32;
-    nTime32 = nTime1 / nTime32;
-    updateGraphics();
-    clean();
+    double nTime1 = run(1,1,0,argv);
+    double nTime2 = nTime1 / run(2,2,0,argv);
+    double nTime4 = nTime1 / run(4,4,0,argv);
+    double nTime8 = nTime1 / run(8,8,0,argv);
+    double nTime16 = nTime1 / run(16,16,0,argv);
+    double nTime32 = nTime1 / run(32,32,0,argv);
     
+    double uTime1 = run(1,1,2,argv);
+    double uTime2 = uTime1 / run(2,2,2,argv);
+    double uTime4 = uTime1 / run(4,4,2,argv);
+    double uTime8 = uTime1 / run(8,8,2,argv);
+    double uTime16 = uTime1 / run(16,16,2,argv);
+    double uTime32 = uTime1 / run(32,32,2,argv);
     
-    
-    
-    
-    
-
-    // EXPONENTIAL RUN
-    nBuckets = 1;
-    nThreads = 1;
-    setup(argv);
-    populateExponential();
-    setSnL();
-    updateGraphics();
-    double eTime1 = omp_get_wtime();
-    bucketSort();
-    eTime1 = omp_get_wtime() - eTime1;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 2;
-    nThreads = 2;
-    setup(argv);
-    populateExponential();
-    setSnL();
-    updateGraphics();
-    double eTime2 = omp_get_wtime();
-    bucketSort();
-    eTime2 = omp_get_wtime() - eTime2;
-    eTime2 = eTime1 / eTime2;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 4;
-    nThreads = 4;
-    setup(argv);
-    populateExponential();
-    setSnL();
-    updateGraphics();
-    double eTime4 = omp_get_wtime();
-    bucketSort();
-    eTime4 = omp_get_wtime() - eTime4;
-    eTime4 = eTime1 / eTime4;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 8;
-    nThreads = 8;
-    setup(argv);
-    populateExponential();
-    setSnL();
-    updateGraphics();
-    double eTime8 = omp_get_wtime();
-    bucketSort();
-    eTime8 = omp_get_wtime() - eTime8;
-    eTime8 = eTime1 / eTime8;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 16;
-    nThreads = 16;
-    setup(argv);
-    populateExponential();
-    setSnL();
-    updateGraphics();
-    double eTime16 = omp_get_wtime();
-    bucketSort();
-    eTime16 = omp_get_wtime() - eTime16;
-    eTime16 = eTime1 / eTime16;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 32;
-    nThreads = 32;
-    setup(argv);
-    populateExponential();
-    setSnL();
-    updateGraphics();
-    double eTime32 = omp_get_wtime();
-    bucketSort();
-    eTime32 = omp_get_wtime() - eTime32;
-    eTime32 = eTime1 / eTime32;
-    updateGraphics();
-    clean();
-
-    
-    
-    
-    
-    // UNIFORM RUN
-    nBuckets = 1;
-    nThreads = 1;
-    setup(argv);
-    populateUniform();
-    setSnL();
-    updateGraphics();
-    double uTime1 = omp_get_wtime();
-    bucketSort();
-    uTime1 = omp_get_wtime() - uTime1;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 2;
-    nThreads = 2;
-    setup(argv);
-    populateUniform();
-    setSnL();
-    updateGraphics();
-    double uTime2 = omp_get_wtime();
-    bucketSort();
-    uTime2 = omp_get_wtime() - uTime2;
-    uTime2 = uTime1 / uTime2;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 4;
-    nThreads = 4;
-    setup(argv);
-    populateUniform();
-    setSnL();
-    updateGraphics();
-    double uTime4 = omp_get_wtime();
-    bucketSort();
-    uTime4 = omp_get_wtime() - uTime4;
-    uTime4 = uTime1 / uTime4;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 8;
-    nThreads = 8;
-    setup(argv);
-    populateUniform();
-    setSnL();
-    updateGraphics();
-    double uTime8 = omp_get_wtime();
-    bucketSort();
-    uTime8 = omp_get_wtime() - uTime8;
-    uTime8 = uTime1 / uTime8;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 16;
-    nThreads = 16;
-    setup(argv);
-    populateUniform();
-    setSnL();
-    updateGraphics();
-    double uTime16 = omp_get_wtime();
-    bucketSort();
-    uTime16 = omp_get_wtime() - uTime16;
-    uTime16 = uTime1 / uTime16;
-    updateGraphics();
-    clean();
-    
-    nBuckets = 32;
-    nThreads = 32;
-    setup(argv);
-    populateUniform();
-    setSnL();
-    updateGraphics();
-    double uTime32 = omp_get_wtime();
-    bucketSort();
-    uTime32 = omp_get_wtime() - uTime32;
-    uTime32 = uTime1 / uTime32;
-    updateGraphics();
-    clean();
+    double eTime1 = run(1,1,1,argv);
+    double eTime2 = eTime1 / run(2,2,1,argv);
+    double eTime4 = eTime1 / run(4,4,1,argv);
+    double eTime8 = eTime1 / run(8,8,1,argv);
+    double eTime16 = eTime1 / run(16,16,1,argv);
+    double eTime32 = eTime1 / run(32,32,1,argv);
  
     printf("Speedup of distributions with %d elements. nBuckets = nThreads\n", size);
 
-    
-    
     printf("N = 1 1 2 %f 4 %f 8 %f 16 %f 32 %f\n", nTime2, nTime4, nTime8, nTime16, nTime32);
     printf("E = 1 1 2 %f 4 %f 8 %f 16 %f 32 %f\n", eTime2, eTime4, eTime8, eTime16, eTime32);
     printf("U = 1 1 2 %f 4 %f 8 %f 16 %f 32 %f\n", uTime2, uTime4, uTime8, uTime16, uTime32);
